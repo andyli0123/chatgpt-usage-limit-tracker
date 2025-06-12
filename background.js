@@ -1,16 +1,33 @@
 const DEBUG = false;
 const QUOTA_DATA_URL = 'https://raw.githubusercontent.com/andyli0123/chatgpt-usage-limit-tracker/main/quota.json';
 
-let cachedQuotaData = null;
-let lastFetchTimestamp = 0;
 const CACHE_DURATION_MS = 60 * 60 * 1000; // Cache for 1 hour
+
+function readStoredCache() {
+    return new Promise(resolve => {
+        chrome.storage.local.get(['cachedQuotaData', 'lastFetchTimestamp'], items => {
+            resolve({
+                cachedQuotaData: items.cachedQuotaData || null,
+                lastFetchTimestamp: items.lastFetchTimestamp || 0
+            });
+        });
+    });
+}
+
+function writeStoredCache(dataModels, timestamp) {
+    chrome.storage.local.set({
+        cachedQuotaData: dataModels,
+        lastFetchTimestamp: timestamp
+    });
+}
 
 async function getQuotaData() {
   const now = Date.now();
+  const { cachedQuotaData: storedData, lastFetchTimestamp: storedTs } = await readStoredCache();
   
-  if (cachedQuotaData && (now - lastFetchTimestamp < CACHE_DURATION_MS)) {
-    return cachedQuotaData;
-  }
+    if (storedData && (now - storedTs < CACHE_DURATION_MS)) {
+        return storedData;
+    }
   
   let sourceUrl;
   if (DEBUG) {
@@ -25,17 +42,15 @@ async function getQuotaData() {
         throw new Error(`Failed to fetch from ${sourceUrl}, status: ${response.status}`);
     }
     const data = await response.json();
-    cachedQuotaData = data.models;
-    lastFetchTimestamp = now;
-    return cachedQuotaData;
+    writeStoredCache(data.models, now);
+    return data.models;
   } catch (error) {
     console.error(`Error fetching quota data from ${sourceUrl}:`, error, 'Falling back to local file.');
     try {
         const fallbackResponse = await fetch(chrome.runtime.getURL('quota.json'));
         const fallbackData = await fallbackResponse.json();
-        cachedQuotaData = fallbackData.models;
-        lastFetchTimestamp = now;
-        return cachedQuotaData;
+        writeStoredCache(fallbackData.models, now);
+        return fallbackData.models;
     } catch (fallbackError) {
         console.error('CRITICAL: Could not load quota data from local fallback either.', fallbackError);
         return [];
