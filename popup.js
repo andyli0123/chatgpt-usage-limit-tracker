@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function formatPeriod(hours) {
         const prefix = chrome.i18n.getMessage("period_prefix");
+        const lang = chrome.i18n.getUILanguage();
         let value, unit;
 
         if (hours >= 168) {
@@ -16,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
             unit = chrome.i18n.getMessage(value > 1 ? "period_hours" : "period_hour");
         }
 
+        if (lang.startsWith("en") && value === 1) {
+            return `${prefix} ${unit}`;
+        }
         return `${prefix} ${value} ${unit}`;
     }
 
