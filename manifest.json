@@ -10,7 +10,8 @@
     "alarms"
   ],
   "host_permissions": [
-    "*://chatgpt.com/*"
+    "*://chatgpt.com/*",
+    "*://raw.githubusercontent.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
