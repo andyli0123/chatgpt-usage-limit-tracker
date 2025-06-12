@@ -1,0 +1,29 @@
+{
+  "extensionName": {
+    "message": "ChatGPT 使用配額限制"
+  },
+  "extensionDescription": {
+    "message": "顯示 ChatGPT Plus 所有模型的使用狀況。"
+  },
+  "period_prefix": {
+    "message": "每"
+  },
+  "period_week": {
+    "message": "週"
+  },
+  "period_weeks": {
+    "message": "週"
+  },
+  "period_day": {
+    "message": "天"
+  },
+  "period_days": {
+    "message": "天"
+  },
+  "period_hour": {
+    "message": "小時"
+  },
+  "period_hours": {
+    "message": "小時"
+  }
+}

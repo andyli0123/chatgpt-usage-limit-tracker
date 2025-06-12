@@ -1,0 +1,104 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#cqt-panel {
+    width: 320px;
+    padding: 16px;
+    color: #1a1a1a;
+    background-color: #ffffff;
+}
+
+.cqt-model-row {
+    margin-bottom: 16px;
+}
+
+.cqt-model-row:last-child {
+    margin-bottom: 0;
+}
+
+.cqt-model-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.cqt-model-name-group {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.cqt-model-name {
+    font-weight: 500;
+    font-size: 15px;
+    color: #333;
+}
+
+.cqt-model-period {
+    font-size: 12px;
+    color: #888;
+    background-color: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.cqt-model-usage {
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+}
+
+.cqt-progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.cqt-progress-bar {
+    height: 100%;
+    background-color: #19c37d; 
+    border-radius: 4px;
+    transition: width 0.5s ease-in-out;
+}
+
+.cqt-loader, .cqt-error {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    font-size: 14px;
+}
+
+.cqt-error {
+    color: #d9534f;
+}
+
+@media (prefers-color-scheme: dark) {
+    body, #cqt-panel {
+        background-color: #2a2a2a;
+        color: #e5e5e5;
+    }
+
+    .cqt-model-name {
+        color: #f0f0f0;
+    }
+
+    .cqt-model-usage,
+    .cqt-model-period {
+        color: #b0b0b0;
+    }
+
+    .cqt-model-period {
+        background-color: #3a3a3a;
+    }
+
+    .cqt-progress-bar-container {
+        background-color: #444;
+    }
+}

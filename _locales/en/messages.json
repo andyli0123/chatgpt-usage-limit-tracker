@@ -1,0 +1,29 @@
+{
+  "extensionName": {
+    "message": "ChatGPT Usage Limit Tracker"
+  },
+  "extensionDescription": {
+    "message": "Track usage for all ChatGPT Plus models."
+  },
+  "period_prefix": {
+    "message": "Every"
+  },
+  "period_week": {
+    "message": "week"
+  },
+  "period_weeks": {
+    "message": "weeks"
+  },
+  "period_day": {
+    "message": "day"
+  },
+  "period_days": {
+    "message": "days"
+  },
+  "period_hour": {
+    "message": "hour"
+  },
+  "period_hours": {
+    "message": "hours"
+  }
+}
