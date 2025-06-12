@@ -1,5 +1,5 @@
-const DEBUG = true;
-const QUOTA_DATA_URL = 'https://example.com/quota.json'; 
+const DEBUG = false;
+const QUOTA_DATA_URL = 'https://raw.githubusercontent.com/andyli0123/chatgpt-usage-limit-tracker/main/quota.json';
 
 let cachedQuotaData = null;
 let lastFetchTimestamp = 0;
