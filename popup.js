@@ -24,7 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateStatus(message, isError = false) {
-        panel.innerHTML = `<div class="${isError ? 'cqt-error' : 'cqt-loader'}">${message}</div>`;
+        panel.textContent = '';
+        const statusDiv = document.createElement('div');
+        statusDiv.className = isError ? 'cqt-error' : 'cqt-loader';
+        statusDiv.textContent = message;
+        panel.appendChild(statusDiv);
     }
 
     function updatePanelContent() {
@@ -36,27 +40,54 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (response && response.data) {
-                let content = '';
+                panel.textContent = '';
 
                 response.data.forEach(model => {
-                    const percentage = model.quota > 0 ? (model.used / model.quota) * 100 : 0;
-                    content += `
-                        <div class="cqt-model-row">
-                            <div class="cqt-model-info">
-                                <div class="cqt-model-name-group">
-                                    <span class="cqt-model-name">${model.id}</span>
-                                    <span class="cqt-model-period">${formatPeriod(model.hours)}</span>
-                                </div>
-                                <span class="cqt-model-usage">${model.used} / ${model.quota > 0 ? model.quota : '∞'}</span>
-                            </div>
-                            <div class="cqt-progress-bar-container">
-                                <div class="cqt-progress-bar" style="width: ${percentage}%;"></div>
-                            </div>
-                        </div>
-                    `;
-                });
+                    const row = document.createElement('div');
+                    row.className = 'cqt-model-row';
 
-                panel.innerHTML = content;
+                    // Model info container
+                    const info = document.createElement('div');
+                    info.className = 'cqt-model-info';
+
+                    // Name + period group
+                    const nameGroup = document.createElement('div');
+                    nameGroup.className = 'cqt-model-name-group';
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'cqt-model-name';
+                    nameSpan.textContent = model.id;
+                    nameGroup.appendChild(nameSpan);
+
+                    const periodSpan = document.createElement('span');
+                    periodSpan.className = 'cqt-model-period';
+                    periodSpan.textContent = formatPeriod(model.hours);
+                    nameGroup.appendChild(periodSpan);
+
+                    info.appendChild(nameGroup);
+
+                    // Usage text
+                    const usageSpan = document.createElement('span');
+                    usageSpan.className = 'cqt-model-usage';
+                    usageSpan.textContent = `${model.used} / ${model.quota > 0 ? model.quota : '∞'}`;
+                    info.appendChild(usageSpan);
+
+                    row.appendChild(info);
+
+                    // Progress bar container
+                    const barContainer = document.createElement('div');
+                    barContainer.className = 'cqt-progress-bar-container';
+
+                    const percentage = model.quota > 0 ? (model.used / model.quota) * 100 : 0;
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'cqt-progress-bar';
+                    progressBar.style.width = `${percentage}%`;
+
+                    barContainer.appendChild(progressBar);
+                    row.appendChild(barContainer);
+
+                    panel.appendChild(row);
+                });
             } else {
                 updateStatus("Error.", true);
             }
