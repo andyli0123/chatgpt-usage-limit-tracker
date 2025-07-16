@@ -122,7 +122,7 @@ chrome.webRequest.onBeforeRequest.addListener(
             }
         }
     },
-    { urls: ["https://chatgpt.com/backend-api/conversation"] },
+    { urls: ["*://chatgpt.com/backend-api/*/conversation"] },
     ["requestBody"]
 );
 
