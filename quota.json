@@ -1,11 +1,6 @@
 {
   "models": [
-    { "id": "o3", "quota": 100, "hours": 168 },
-    { "id": "o4-mini-high", "quota": 100, "hours": 24 },
-    { "id": "o4-mini", "quota": 300, "hours": 24 },
-    { "id": "4.5", "quota": 50, "hours": 168 },
-    { "id": "4.1", "quota": 80, "hours": 3 },
-    { "id": "4.1-mini", "quota": 80, "hours": 3 },
-    { "id": "4o", "quota": 80, "hours": 3 }
+    { "id": "gpt-5-thinking", "quota": 200, "hours": 168 },
+    { "id": "gpt-5", "quota": 80, "hours": 3 }
   ]
 }
