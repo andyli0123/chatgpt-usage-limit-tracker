@@ -4,182 +4,252 @@ const QUOTA_DATA_URL = 'https://raw.githubusercontent.com/andyli0123/chatgpt-usa
 const CACHE_DURATION_MS = 60 * 60 * 1000; // Cache for 1 hour
 
 function readStoredCache() {
-    return new Promise(resolve => {
-        chrome.storage.local.get(['cachedQuotaData', 'lastFetchTimestamp'], items => {
-            resolve({
-                cachedQuotaData: items.cachedQuotaData || null,
-                lastFetchTimestamp: items.lastFetchTimestamp || 0
-            });
+  return new Promise(resolve => {
+    chrome.storage.local.get(
+      ['cachedQuotaAll', 'lastFetchTimestamp', 'activePlan'],
+      items => {
+        resolve({
+          cachedQuotaAll: items.cachedQuotaAll || null,
+          lastFetchTimestamp: items.lastFetchTimestamp || 0,
+          activePlan: items.activePlan || 'plus'
         });
-    });
+      }
+    );
+  });
 }
 
-function writeStoredCache(dataModels, timestamp) {
-    chrome.storage.local.set({
-        cachedQuotaData: dataModels,
-        lastFetchTimestamp: timestamp
-    });
+function writeStoredCache(quotaAll, timestamp) {
+  chrome.storage.local.set({
+    cachedQuotaAll: quotaAll,
+    lastFetchTimestamp: timestamp
+  });
 }
 
-async function getQuotaData() {
+async function getActivePlan() {
+  const { activePlan } = await readStoredCache();
+  return activePlan || 'plus';
+}
+
+function setActivePlan(plan) {
+  return new Promise(resolve => {
+    chrome.storage.local.set({ activePlan: plan }, resolve);
+  });
+}
+
+function normalizeQuotaShape(raw) {
+  if (!raw) return { models: [], free: [], plus: [], team: [], pro: [] };
+  if (Array.isArray(raw)) {
+    return { models: raw, free: [], plus: raw, team: [], pro: [] };
+  }
+  if (raw.free || raw.plus || raw.team || raw.pro) {
+    return {
+      models: raw.models && raw.models.length ? raw.models : (raw.plus || []),
+      free: raw.free || [],
+      plus: raw.plus || raw.models || [],
+      team: raw.team || [],
+      pro: raw.pro || []
+    };
+  }
+  if (raw.models) {
+    return { models: raw.models, free: [], plus: raw.models, team: [], pro: [] };
+  }
+  return { models: [], free: [], plus: [], team: [], pro: [] };
+}
+
+async function fetchQuotaAll() {
+  let sourceUrl = DEBUG ? chrome.runtime.getURL('quota.json') : QUOTA_DATA_URL;
   const now = Date.now();
-  const { cachedQuotaData: storedData, lastFetchTimestamp: storedTs } = await readStoredCache();
-  
-    if (storedData && (now - storedTs < CACHE_DURATION_MS)) {
-        return storedData;
-    }
-  
-  let sourceUrl;
-  if (DEBUG) {
-    sourceUrl = chrome.runtime.getURL('quota.json');
-  } else {
-    sourceUrl = QUOTA_DATA_URL;
+  const { cachedQuotaAll, lastFetchTimestamp } = await readStoredCache();
+
+  if (cachedQuotaAll && (now - lastFetchTimestamp < CACHE_DURATION_MS)) {
+    return cachedQuotaAll;
   }
-  
+
+  async function loadFrom(url) {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`Fetch failed ${resp.status}`);
+    const data = await resp.json();
+    return normalizeQuotaShape(data);
+  }
+
   try {
-    const response = await fetch(sourceUrl);
-    if (!response.ok) {
-        throw new Error(`Failed to fetch from ${sourceUrl}, status: ${response.status}`);
-    }
-    const data = await response.json();
-    writeStoredCache(data.models, now);
-    return data.models;
-  } catch (error) {
-    console.error(`Error fetching quota data from ${sourceUrl}:`, error, 'Falling back to local file.');
+    const normalized = await loadFrom(sourceUrl);
+    writeStoredCache(normalized, now);
+    return normalized;
+  } catch (err) {
+    console.error('Remote quota fetch failed:', err, 'Falling back to local quota.json');
     try {
-        const fallbackResponse = await fetch(chrome.runtime.getURL('quota.json'));
-        const fallbackData = await fallbackResponse.json();
-        writeStoredCache(fallbackData.models, now);
-        return fallbackData.models;
-    } catch (fallbackError) {
-        console.error('CRITICAL: Could not load quota data from local fallback either.', fallbackError);
-        return [];
+      const fallback = await loadFrom(chrome.runtime.getURL('quota.json'));
+      writeStoredCache(fallback, now);
+      return fallback;
+    } catch (fallbackErr) {
+      console.error('CRITICAL: local quota.json failed too', fallbackErr);
+      return { models: [], free: [], plus: [], team: [], pro: [] };
     }
   }
+}
+
+async function getQuotaForPlan(planOverride = null) {
+  const plan = planOverride || await getActivePlan();
+  const all = await fetchQuotaAll();
+  const map = {
+    free: all.free,
+    plus: all.plus || all.models,
+    team: all.team,
+    pro: all.pro
+  };
+  return map[plan] || all.plus || all.models || [];
+}
+
+async function getAllKnownModels() {
+  const all = await fetchQuotaAll();
+  const buckets = [all.free, all.plus || all.models, all.team, all.pro].filter(Boolean);
+  const dedup = new Map();
+  for (const list of buckets) {
+    (list || []).forEach(m => {
+      if (m && m.id && !dedup.has(m.id)) dedup.set(m.id, m);
+    });
+  }
+  return Array.from(dedup.values());
 }
 
 async function mapApiModelToId(apiModelSlug) {
-    const quotaData = await getQuotaData();
-    if (!apiModelSlug || !Array.isArray(quotaData)) return null;
+  if (!apiModelSlug) return null;
+  const known = await getAllKnownModels();
 
-    // 尋找完全匹配的
-    const exactMatch = quotaData.find(m => m.id === apiModelSlug);
-    if (exactMatch) return exactMatch.id;
+  // 尋找完全匹配的
+  const exact = known.find(m => m.id === apiModelSlug);
+  if (exact) return exact.id;
 
-    // 尋找包含匹配的，從最長 ID 開始以避免 "4.1" 錯誤匹配 "4.1-mini"
-    const sortedQuotaData = [...quotaData].sort((a, b) => b.id.length - a.id.length);
-    
-    for (const model of sortedQuotaData) {
-        const id = model.id;
-        // 處理特殊情況，如 '4.5' -> '4-5'
-        const alternativeId = id.includes('.') ? id.replace('.', '-') : null;
+  // 尋找包含匹配的，從最長 ID 開始以避免 "4.1" 錯誤匹配 "4.1-mini"
+  const sorted = [...known].sort((a, b) => b.id.length - a.id.length);
+  for (const m of sorted) {
+    const id = m.id;
+    // 處理特殊情況，如 '4.5' -> '4-5'
+    const alt = id.includes('.') ? id.replace('.', '-') : null;
+    if (apiModelSlug.includes(id)) return id;
+    if (alt && apiModelSlug.includes(alt)) return id;
+  }
 
-        if (apiModelSlug.includes(id)) {
-            return id;
-        }
-        if (alternativeId && apiModelSlug.includes(alternativeId)) {
-            return id;
-        }
-    }
+  if (apiModelSlug === 'auto') {
+    const hasAuto = known.find(m => m.id === 'auto');
+    if (hasAuto) return 'auto';
+  }
 
-    // 特別處理 "auto"，指向 "4o"
-    if (apiModelSlug === 'auto') {
-        const autoModel = quotaData.find(m => m.id === '4o');
-        if (autoModel) return autoModel.id;
-    }
-    
-    console.warn(`No matching model found for API slug: ${apiModelSlug}`);
-    return null;
+  console.warn(`No matching model found for API slug: ${apiModelSlug}`);
+  return null;
 }
 
 chrome.webRequest.onBeforeRequest.addListener(
-    async (details) => {
-        if (details.method === "POST" && details.requestBody && details.requestBody.raw) {
-            try {
-                const bodyStr = new TextDecoder("utf-8").decode(details.requestBody.raw[0].bytes);
-                const body = JSON.parse(bodyStr);
-                
-                let apiModelSlug = body.model;
-                if (!apiModelSlug) return;
+  async (details) => {
+    if (details.method === "POST" && details.requestBody && details.requestBody.raw) {
+      try {
+        const bodyStr = new TextDecoder("utf-8").decode(details.requestBody.raw[0].bytes);
+        const body = JSON.parse(bodyStr);
+        const apiModelSlug = body.model;
+        if (!apiModelSlug) return;
 
-                const modelId = await mapApiModelToId(apiModelSlug);
-                if (modelId) {
-                    const timestamp = Date.now();
-                    const storageKey = `timestamps_${modelId}`;
-                    
-                    chrome.storage.local.get([storageKey], (result) => {
-                        const timestamps = result[storageKey] || [];
-                        timestamps.push(timestamp);
-                        let dataToSave = {};
-                        dataToSave[storageKey] = timestamps;
-                        chrome.storage.local.set(dataToSave, () => {
-                            console.log(`Message logged for model: ${modelId} (from API slug: ${apiModelSlug})`);
-                        });
-                    });
-                }
-            } catch (e) {
-                console.warn("Could not parse request body.", e);
+        const modelId = await mapApiModelToId(apiModelSlug);
+        if (!modelId) return;
+
+        const timestamp = Date.now();
+
+        // 主要 model 計數
+        const primaryKey = `timestamps_${modelId}`;
+        // 若偵測到 gpt-5，同時也加到 auto（for Free 視覺一致）
+        const extraKey = (modelId === 'gpt-5') ? 'timestamps_auto' : null;
+
+        const keys = extraKey ? [primaryKey, extraKey] : [primaryKey];
+        chrome.storage.local.get(keys, (result) => {
+          const changes = {};
+          const primaryArr = result[primaryKey] || [];
+          primaryArr.push(timestamp);
+          changes[primaryKey] = primaryArr;
+
+          if (extraKey) {
+            const extraArr = result[extraKey] || [];
+            extraArr.push(timestamp);
+            changes[extraKey] = extraArr;
+          }
+
+          chrome.storage.local.set(changes, () => {
+            if (DEBUG) {
+              console.log(`Logged ${primaryKey}${extraKey ? ' & '+extraKey : ''} (slug: ${apiModelSlug})`);
             }
-        }
-    },
-    { urls: ["*://chatgpt.com/backend-api/*/conversation"] },
-    ["requestBody"]
+          });
+        });
+      } catch (e) {
+        console.warn("Could not parse request body.", e);
+      }
+    }
+  },
+  {
+    urls: [
+      "*://chatgpt.com/backend-api/conversation",
+      "*://chatgpt.com/backend-api/*/conversation"
+    ]
+  },
+  ["requestBody"]
 );
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  (async () => {
     if (request.action === "getUsageData") {
-        (async () => {
-            const quotaData = await getQuotaData();
-            const storageKeys = quotaData.map(m => `timestamps_${m.id}`);
-            
-            chrome.storage.local.get(storageKeys, (result) => {
-                const usageData = quotaData.map(model => {
-                    const timestamps = result[`timestamps_${model.id}`] || [];
-                    const windowStart = Date.now() - (model.hours * 60 * 60 * 1000); 
-                    
-                    const used = timestamps.filter(ts => ts >= windowStart).length;
-                    
-                    return {
-                        id: model.id,
-                        used: used,
-                        quota: model.quota,
-                        hours: model.hours
-                    };
-                });
-                sendResponse({ data: usageData });
-            });
-        })();
-        return true; 
+      const plan = await getActivePlan();
+      const quotaData = await getQuotaForPlan(plan);
+      const storageKeys = quotaData.map(m => `timestamps_${m.id}`);
+
+      chrome.storage.local.get(storageKeys, (result) => {
+        const now = Date.now();
+        const usageData = quotaData.map(model => {
+          const timestamps = result[`timestamps_${model.id}`] || [];
+          const windowStart = now - (model.hours * 60 * 60 * 1000);
+          const used = timestamps.filter(ts => ts >= windowStart).length;
+          return {
+            id: model.id,
+            used,
+            quota: model.quota,
+            hours: model.hours
+          };
+        });
+        sendResponse({ data: usageData, plan });
+      });
+    } else if (request.action === "getActivePlan") {
+      const plan = await getActivePlan();
+      sendResponse({ plan });
+    } else if (request.action === "setActivePlan") {
+      await setActivePlan(request.plan);
+      sendResponse({ ok: true });
     }
+  })();
+  return true;
 });
 
-function cleanupOldTimestamps() {
-    console.log("Running daily cleanup of old timestamps...");
-    getQuotaData().then(quotaData => {
-        const storageKeys = quotaData.map(m => `timestamps_${m.id}`);
-        chrome.storage.local.get(storageKeys, (result) => {
-            let changes = {};
-            const longestPeriodHours = Math.max(...quotaData.map(m => m.hours)); 
-            const cleanupThreshold = Date.now() - (longestPeriodHours * 60 * 60 * 1000 * 1.5);
+async function cleanupOldTimestamps() {
+  const allModels = await getAllKnownModels();
+  if (!allModels.length) return;
 
-            for (const key in result) {
-                if (Array.isArray(result[key])) {
-                    changes[key] = result[key].filter(ts => ts >= cleanupThreshold);
-                }
-            }
-            chrome.storage.local.set(changes);
-        });
-    });
+  const storageKeys = allModels.map(m => `timestamps_${m.id}`);
+  chrome.storage.local.get(storageKeys, (result) => {
+    let changes = {};
+    const longest = Math.max(...allModels.map(m => m.hours || 24));
+    const cleanupThreshold = Date.now() - (longest * 60 * 60 * 1000 * 1.5);
+
+    for (const key in result) {
+      if (Array.isArray(result[key])) {
+        changes[key] = result[key].filter(ts => ts >= cleanupThreshold);
+      }
+    }
+    chrome.storage.local.set(changes);
+  });
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.alarms.create("dailyCleanup", {
-        periodInMinutes: 1440 
-    });
+  chrome.alarms.create("dailyCleanup", { periodInMinutes: 1440 });
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === "dailyCleanup") {
-        cleanupOldTimestamps();
-    }
+  if (alarm.name === "dailyCleanup") {
+    cleanupOldTimestamps();
+  }
 });

@@ -1,6 +1,6 @@
 # ChatGPT Usage Limit Tracker
 
-A Chrome Extension to monitor the usage quota of ChatGPT Plus models.
+A Chrome Extension to monitor usage limits for ChatGPT models.
 
 | Browser   | Install Link |
 | :-------: | ------------ |

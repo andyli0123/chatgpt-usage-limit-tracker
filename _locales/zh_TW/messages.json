@@ -3,7 +3,7 @@
     "message": "ChatGPT 使用配額限制"
   },
   "extensionDescription": {
-    "message": "顯示 ChatGPT Plus 所有模型的使用狀況。"
+    "message": "顯示 ChatGPT 所有模型的使用狀況。"
   },
   "period_prefix": {
     "message": "每"
@@ -25,5 +25,23 @@
   },
   "period_hours": {
     "message": "小時"
+  },
+  "loading": {
+    "message": "載入中…"
+  },
+  "error": {
+    "message": "發生錯誤"
+  },
+  "plan_free": {
+    "message": "Free"
+  },
+  "plan_plus": {
+    "message": "Plus"
+  },
+  "plan_team": {
+    "message": "Team"
+  },
+  "plan_pro": {
+    "message": "Pro"
   }
 }

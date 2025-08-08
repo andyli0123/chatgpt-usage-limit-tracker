@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>ChatGPT Usage Limit Tracker</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div id="cqt-panel">
-        <div class="cqt-loader">Loading...</div>
+      <div class="cqt-segment" role="tablist" aria-label="Plan">
+        <button class="cqt-seg-btn" data-plan="free" role="tab"></button>
+        <button class="cqt-seg-btn" data-plan="plus" role="tab"></button>
+        <button class="cqt-seg-btn" data-plan="team" role="tab"></button>
+        <button class="cqt-seg-btn" data-plan="pro" role="tab"></button>
+      </div>
+
+      <div id="cqt-list">
+        <div class="cqt-loader" id="cqt-loader">Loading...</div>
+      </div>
     </div>
     <script src="popup.js"></script>
-</body>
+  </body>
 </html>
