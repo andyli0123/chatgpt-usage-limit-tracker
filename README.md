@@ -12,7 +12,7 @@ A **Chrome Extension** to monitor your **ChatGPT usage limits** (quotas) in real
 
 ## 🚀 Features
 
-- **Track usage limits for GPT-5 models** — including `gpt-5`, `gpt-5-thinking`, and `gpt-5-thinking-pro`.
+- **Track usage limits for GPT-5 models** — including `gpt-5`, `gpt-5-thinking`, and `gpt-5-pro`.
 - **Plan switcher** — switch between **Free**, **Plus**, **Team**, and **Pro** plans.
 - **Visual progress bars** — see your quota usage at a glance.
 - **Local & private** — all data is stored locally in your browser; **no tracking**.
@@ -33,7 +33,7 @@ A **Chrome Extension** to monitor your **ChatGPT usage limits** (quotas) in real
 ## 📜 Changelog
 
 ### 2.0 — 2025-08-08
-- Added **GPT-5 support** (`gpt-5`, `gpt-5-thinking`, `gpt-5-thinking-pro`).
+- Added **GPT-5 support** (`gpt-5`, `gpt-5-thinking`, `gpt-5-pro`).
 - Added **plan switcher** (Free, Plus, Team, Pro).
 
 ### 1.1 — 2025-07-16
