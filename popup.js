@@ -4,12 +4,11 @@ document.addEventListener('DOMContentLoaded', async function () {
   const seg = document.querySelector('.cqt-segment');
   const segBtns = Array.from(document.querySelectorAll('.cqt-seg-btn'));
 
-  // i18n button labels
   const labels = {
-    free: chrome.i18n.getMessage('plan_free') || 'Free',
-    plus: chrome.i18n.getMessage('plan_plus') || 'Plus',
-    team: chrome.i18n.getMessage('plan_team') || 'Team',
-    pro: chrome.i18n.getMessage('plan_pro') || 'Pro'
+    free: 'Free',
+    plus: 'Plus',
+    team: 'Team',
+    pro: 'Pro'
   };
   segBtns.forEach(btn => { btn.textContent = labels[btn.dataset.plan]; });
   loader.textContent = chrome.i18n.getMessage('loading') || 'Loading…';
@@ -76,7 +75,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       const usageSpan = document.createElement('span');
       usageSpan.className = 'cqt-model-usage';
-      usageSpan.textContent = `${model.used} / ${model.quota > 0 ? model.quota : '∞'}`;
+      if (model.quota > 0) {
+        usageSpan.textContent = `${model.used} / ${model.quota}`;
+      } else {
+        usageSpan.innerHTML = `${model.used} / <span class="cqt-infty">∞</span>`;
+      }
       info.appendChild(usageSpan);
 
       row.appendChild(info);

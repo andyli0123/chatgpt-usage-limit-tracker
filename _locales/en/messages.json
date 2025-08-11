@@ -3,7 +3,7 @@
     "message": "ChatGPT Usage Limit Tracker"
   },
   "extensionDescription": {
-    "message": "Track usage limits (quotas) for all ChatGPT models."
+    "message": "Displays usage limits and quotas for all ChatGPT models, including GPT-5, GPT-5 Thinking, and GPT-5 Pro (e.g., X msgs / X hrs)."
   },
   "period_prefix": {
     "message": "Every"
@@ -31,17 +31,5 @@
   },
   "error": {
     "message": "Error."
-  },
-  "plan_free": {
-    "message": "Free"
-  },
-  "plan_plus": {
-    "message": "Plus"
-  },
-  "plan_team": {
-    "message": "Team"
-  },
-  "plan_pro": {
-    "message": "Pro"
   }
 }

@@ -87,6 +87,10 @@ body {
   color: #555;
 }
 
+.cqt-infty {
+  font-family: -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", "Apple Symbols", "Noto Sans Symbols2", "Segoe UI Symbol", "STIXGeneral", "Symbola", sans-serif;
+}
+
 .cqt-progress-bar-container {
   width: 100%;
   height: 8px;

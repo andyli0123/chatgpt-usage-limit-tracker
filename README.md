@@ -32,6 +32,9 @@ A **Chrome Extension** to monitor your **ChatGPT usage limits** (quotas) in real
 
 ## 📜 Changelog
 
+### 2.1 — 2025-08-12
+- Added Japanese and Korean.
+
 ### 2.0 — 2025-08-08
 - Added **GPT-5 support** (`gpt-5`, `gpt-5-thinking`, `gpt-5-pro`).
 - Added **plan switcher** (Free, Plus, Team, Pro).

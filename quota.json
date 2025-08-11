@@ -1,6 +1,6 @@
 {
   "models": [
-    { "id": "gpt-5-thinking", "quota": 200, "hours": 168 },
+    { "id": "gpt-5-thinking", "quota": 3000, "hours": 168 },
     { "id": "gpt-5", "quota": 160, "hours": 3 },
     { "id": "o3", "quota": 100, "hours": 168 },
     { "id": "o4-mini-high", "quota": 100, "hours": 24 },
@@ -15,11 +15,11 @@
   ],
   "plus": [
     { "id": "gpt-5", "quota": 160, "hours": 3 },
-    { "id": "gpt-5-thinking", "quota": 200, "hours": 168 }
+    { "id": "gpt-5-thinking", "quota": 3000, "hours": 168 }
   ],
   "team": [
     { "id": "gpt-5", "quota": -1, "hours": 3 },
-    { "id": "gpt-5-thinking", "quota": 200, "hours": 168 },
+    { "id": "gpt-5-thinking", "quota": 3000, "hours": 168 },
     { "id": "gpt-5-pro", "quota": 200, "hours": 168 }
   ],
   "pro": [

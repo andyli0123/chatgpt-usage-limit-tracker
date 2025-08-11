@@ -1,0 +1,35 @@
+{
+  "extensionName": {
+    "message": "ChatGPT 사용 한도 트래커"
+  },
+  "extensionDescription": {
+    "message": "모든 ChatGPT 모델의 사용 한도(쿼터)를 표시합니다. GPT-5, GPT-5 Thinking, GPT-5 Pro를 포함하며, 예: X시간마다 최대 X개의 메시지."
+  },
+  "period_prefix": {
+    "message": "매"
+  },
+  "period_week": {
+    "message": "주"
+  },
+  "period_weeks": {
+    "message": "주"
+  },
+  "period_day": {
+    "message": "일"
+  },
+  "period_days": {
+    "message": "일"
+  },
+  "period_hour": {
+    "message": "시간"
+  },
+  "period_hours": {
+    "message": "시간"
+  },
+  "loading": {
+    "message": "불러오는 중…"
+  },
+  "error": {
+    "message": "오류가 발생했습니다."
+  }
+}

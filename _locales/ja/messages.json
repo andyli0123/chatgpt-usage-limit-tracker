@@ -1,0 +1,35 @@
+{
+  "extensionName": {
+    "message": "ChatGPT 使用上限トラッカー"
+  },
+  "extensionDescription": {
+    "message": "すべての ChatGPT モデルの使用上限（クォータ）を表示します。GPT-5、GPT-5 Thinking、GPT-5 Pro を含み、例：X 時間ごとに最大 X 件のメッセージ。"
+  },
+  "period_prefix": {
+    "message": "毎"
+  },
+  "period_week": {
+    "message": "週"
+  },
+  "period_weeks": {
+    "message": "週"
+  },
+  "period_day": {
+    "message": "日"
+  },
+  "period_days": {
+    "message": "日"
+  },
+  "period_hour": {
+    "message": "時間"
+  },
+  "period_hours": {
+    "message": "時間"
+  },
+  "loading": {
+    "message": "読み込み中…"
+  },
+  "error": {
+    "message": "エラー。"
+  }
+}
