@@ -32,6 +32,9 @@ A **Chrome Extension** to monitor your **ChatGPT usage limits** (quotas) in real
 
 ## 📜 Changelog
 
+### 2.2 — 2025-08-15
+- Added monthly period.
+
 ### 2.1 — 2025-08-12
 - Added Japanese and Korean.
 

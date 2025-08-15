@@ -8,6 +8,12 @@
   "period_prefix": {
     "message": "毎"
   },
+  "period_month": {
+    "message": "か月"
+  },
+  "period_months": {
+    "message": "か月"
+  },
   "period_week": {
     "message": "週"
   },

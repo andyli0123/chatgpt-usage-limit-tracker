@@ -20,7 +20,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     const lang = chrome.i18n.getUILanguage();
     let value, unit;
 
-    if (hours >= 168) {
+    if (hours >= 720) {
+      value = Math.round(hours / 720);
+      unit = chrome.i18n.getMessage(value > 1 ? "period_months" : "period_month");
+    } else if (hours >= 168) {
       value = Math.round(hours / 168);
       unit = chrome.i18n.getMessage(value > 1 ? "period_weeks" : "period_week");
     } else if (hours >= 24) {
@@ -87,8 +90,11 @@ document.addEventListener('DOMContentLoaded', async function () {
       const barContainer = document.createElement('div');
       barContainer.className = 'cqt-progress-bar-container';
 
-      // 視覺：無上限以 200 為最大值
-      const denom = model.quota > 0 ? model.quota : 200;
+      // 無上限時改用模型的 max（若未提供則預設 200）
+      const denom = model.quota > 0
+        ? model.quota
+        : (typeof model.max === 'number' ? model.max : 200);
+
       const percentage = Math.max(0, Math.min(100, (denom ? (model.used / denom) * 100 : 0)));
 
       const progressBar = document.createElement('div');

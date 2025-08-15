@@ -8,6 +8,12 @@
   "period_prefix": {
     "message": "每"
   },
+  "period_month": {
+    "message": "個月"
+  },
+  "period_months": {
+    "message": "個月"
+  },
   "period_week": {
     "message": "週"
   },

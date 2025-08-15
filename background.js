@@ -209,7 +209,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             id: model.id,
             used,
             quota: model.quota,
-            hours: model.hours
+            hours: model.hours,
+            max: typeof model.max === 'number' ? model.max : undefined
           };
         });
         sendResponse({ data: usageData, plan });

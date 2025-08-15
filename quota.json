@@ -18,13 +18,13 @@
     { "id": "gpt-5-thinking", "quota": 3000, "hours": 168 }
   ],
   "team": [
-    { "id": "gpt-5", "quota": -1, "hours": 3 },
+    { "id": "gpt-5", "quota": -1, "hours": 3, "max": 160 },
     { "id": "gpt-5-thinking", "quota": 3000, "hours": 168 },
-    { "id": "gpt-5-pro", "quota": 15, "hours": 168 }
+    { "id": "gpt-5-pro", "quota": 15, "hours": 720 }
   ],
   "pro": [
-    { "id": "gpt-5", "quota": -1, "hours": 3 },
-    { "id": "gpt-5-thinking", "quota": -1, "hours": 168 },
-    { "id": "gpt-5-pro", "quota": -1, "hours": 168 }
+    { "id": "gpt-5", "quota": -1, "hours": 3, "max": 160 },
+    { "id": "gpt-5-thinking", "quota": -1, "hours": 168, "max": 3000 },
+    { "id": "gpt-5-pro", "quota": -1, "hours": 720, "max": 15 }
   ]
 }

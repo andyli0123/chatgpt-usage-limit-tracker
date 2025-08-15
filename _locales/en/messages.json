@@ -8,6 +8,12 @@
   "period_prefix": {
     "message": "Every"
   },
+  "period_month": {
+    "message": "month"
+  },
+  "period_months": {
+    "message": "months"
+  },
   "period_week": {
     "message": "week"
   },

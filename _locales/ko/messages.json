@@ -8,6 +8,12 @@
   "period_prefix": {
     "message": "매"
   },
+  "period_month": {
+    "message": "개월"
+  },
+  "period_months": {
+    "message": "개월"
+  },
   "period_week": {
     "message": "주"
   },
