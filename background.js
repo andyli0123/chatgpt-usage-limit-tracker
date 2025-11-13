@@ -173,9 +173,7 @@ chrome.webRequest.onBeforeRequest.addListener(
           }
 
           chrome.storage.local.set(changes, () => {
-            if (DEBUG) {
-              console.log(`Logged ${primaryKey}${extraKey ? ' & '+extraKey : ''} (slug: ${apiModelSlug})`);
-            }
+            console.log(`Logged ${primaryKey}${extraKey ? ' & '+extraKey : ''} (slug: ${apiModelSlug})`);
           });
         });
       } catch (e) {
